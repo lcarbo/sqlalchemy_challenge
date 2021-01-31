@@ -23,6 +23,8 @@ app = Flask(__name__)
 @app.route("/")
 def home(): 
     return(
+        f"Hawaii Climate Analysis API <br/>"
+        f"<br/>"
         f"Available Routes:<br/>"
         f"/api/v1.0/precipitation<br/>"
         f"/api/v1.0/stations<br/>"
@@ -83,20 +85,32 @@ def tobs():
 
 @app.route("/api/v1.0/<start_date>")
 @app.route("/api/v1.0/<start_date>/<end_date>")
-def date_range(start_date= none, end_date= none):
-
+def date_range(start_date= "", end_date= ""):
+    #return "The temperature stats for the date range starting " + start_date + "are as follows:"
+    session=Session(engine)
     stats = [func.min(measures.tobs), func.avg(measures.tobs), func.max(measures.tobs)]
 
-    if end == none: 
+    if not end_date: 
         range_results = session.query(*stats).filter(measures.date >= start_date).all()
-    range_tobs = list(np.ravel(range_results))
-    return jsonify (range_tobs)
-
-
-
-
     
+        session.close()
+        
+        range_tobs = list(np.ravel(range_results))
 
+        stats_dict = {"Start Date for Search Range": start_date, "Min Temp": range_tobs[0], "Average Temp": range_tobs[1], "Maximum Temp":range_tobs[2]}
+        
+        return jsonify (stats_dict)
+
+
+    range_results = session.query(*stats).filter(measures.date >= start_date).filter(measures.date <= end_date).all()
+    
+    session.close()
+    
+    range_tobs = list(np.ravel(range_results))
+
+    stats_dict = {"Start Date for Search Range": start_date, "Min Temp": range_tobs[0], "Average Temp": range_tobs[1], "Maximum Temp":range_tobs[2], "End Date for Search Range": end_date}
+    
+    return jsonify (stats_dict)
 
 
 if __name__ == "__main__":
