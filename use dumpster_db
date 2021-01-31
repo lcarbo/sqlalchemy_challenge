@@ -1,0 +1,11 @@
+use dumpster_db 
+
+db.createCollection("divers")
+
+db.divers.insert({"name":"Scuba Steve", "yearsDiving": 2, "stillDiving": true, "bestFinds":["shipwreck", "starfish"]})
+
+db.divers.insert({"name":"Charlie", "yearsDiving": 12, "stillDiving": true, "bestFinds":["gold", "starfish"]})
+
+db.divers.insert({"name":"Sally", "yearsDiving": 6, "stillDiving": true, "bestFinds":["sharks", "starfish"]})
+
+db.divers.updateMany({}, {"{$inc : {"yearsDiving" : 1}})
